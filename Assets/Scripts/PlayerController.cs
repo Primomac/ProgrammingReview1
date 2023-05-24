@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     public Vector2 movement;
     public bool isDead = false;
+    public bool isPowered = false;
 
     public SpriteRenderer sprite;
     public Sprite alive;
@@ -33,16 +34,31 @@ public class PlayerController : MonoBehaviour
             movement.y = Input.GetAxis("Vertical");
             transform.Translate(movement * moveSpeed * Time.deltaTime);
         }
+        if (isPowered)
+        {
+            sprite.sprite = angy;
+        }
+        else if (!isPowered && !isDead)
+        {
+            sprite.sprite = alive;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy") && !isDead)
         {
-            isDead = true;
-            game.lives--;
-            sprite.sprite = dead;
-            StartCoroutine(Respawn());
+            if (!isPowered)
+            {
+                isDead = true;
+                game.lives--;
+                sprite.sprite = dead;
+                StartCoroutine(Respawn());
+            }
+            else
+            {
+                Destroy(collision.gameObject);
+            }
         }
     }
 
